@@ -3,7 +3,9 @@ package com;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static io.restassured.RestAssured.given;
@@ -35,12 +37,13 @@ public class Stellar extends Base {
         Random rand = new Random();
         String randomIngredientFromList = ingredientsList.get(rand.nextInt(ingredientsList.size()));
 
-        String orderRequest = "{\"ingredients\": \"" + randomIngredientFromList + "\"}";
+        Map<String, String> bodyMap = new HashMap<>();
+        bodyMap.put("ingredients", randomIngredientFromList);
 
         orderResponse = given()
                 .spec(Base.getBaseSpec())
                 .headers("authorization", accessToken)
-                .body(orderRequest)
+                .body(bodyMap)
                 .when()
                 .post("orders");
 
@@ -48,15 +51,15 @@ public class Stellar extends Base {
 
     @Step("Метод создания заказа без авторизации")
     public void createOrderUnauthorized (){
-
         Random rand = new Random();
         String randomIngredientFromList = ingredientsList.get(rand.nextInt(ingredientsList.size()));
 
-        String orderRequest = "{\"ingredients\": \"" + randomIngredientFromList + "\"}";
+        Map<String, String> bodyMap = new HashMap<>();
+        bodyMap.put("ingredients", randomIngredientFromList);
 
         orderResponse = given()
                 .spec(Base.getBaseSpec())
-                .body(orderRequest)
+                .body(bodyMap)
                 .when()
                 .post("orders");
 
@@ -64,7 +67,6 @@ public class Stellar extends Base {
 
     @Step("Метод создания заказа без ингредиентов")
     public void createOrderWithoutIngredient (String accessToken){
-
         orderResponse = given()
                 .spec(Base.getBaseSpec())
                 .headers("authorization", accessToken)
@@ -75,12 +77,13 @@ public class Stellar extends Base {
 
     @Step("Метод создания заказа с некорректным хэшэм ингредиента")
     public void createOrderWithIncorrectIngredientHash (String accessToken){
+        Map<String, String> bodyMap = new HashMap<>();
+        bodyMap.put("ingredients", "incorrectHash");
 
-        String orderRequest = "{\"ingredients\": \"incorrectHash\"}";
         orderResponse = given()
                 .spec(Base.getBaseSpec())
                 .headers("authorization", accessToken)
-                .body(orderRequest)
+                .body(bodyMap)
                 .when()
                 .post("orders");
 
@@ -88,7 +91,6 @@ public class Stellar extends Base {
 
     @Step("Метод получения списка заказов с авторизацией")
     public void getOrderListWithAccessToken (String accessToken){
-
         orderResponse = given()
                 .spec(Base.getBaseSpec())
                 .headers("authorization", accessToken)
@@ -98,7 +100,6 @@ public class Stellar extends Base {
 
     @Step("Метод получения списка заказов без авторизации")
     public void getOrderListWithoutAccessToken (){
-
         orderResponse = given()
                 .spec(Base.getBaseSpec())
                 .when()
